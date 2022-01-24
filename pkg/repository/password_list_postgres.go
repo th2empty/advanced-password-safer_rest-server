@@ -59,3 +59,11 @@ func (r *PasswordListPostgres) GetById(userId, listId int) (models.PasswordList,
 
 	return list, err
 }
+
+func (r *PasswordListPostgres) Delete(userId, listId int) error {
+	query := fmt.Sprintf("DELETE FROM %s pl USING %s ul WHERE pl.id = ul.list_id AND ul.user_id = $1 AND ul.list_id = $2",
+		passwordListTable, usersListTable)
+	_, err := r.db.Exec(query, userId, listId)
+
+	return err
+}

@@ -77,5 +77,24 @@ func (h *Handler) UpdateList(ctx *gin.Context) {
 }
 
 func (h *Handler) DeleteList(ctx *gin.Context) {
+	userId, err := getUserId(ctx)
+	if err != nil {
+		return
+	}
 
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		newErrorResponse(ctx, http.StatusBadRequest, "invalid id")
+		return
+	}
+
+	err = h.services.PasswordList.Delete(userId, id)
+	if err != nil {
+		newErrorResponse(ctx, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	ctx.JSON(http.StatusOK, statusResponse{
+		Status: "ok",
+	})
 }

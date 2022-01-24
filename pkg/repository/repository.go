@@ -14,6 +14,7 @@ type PasswordList interface {
 	Create(userId int, list models.PasswordList) (int, error)
 	GetAll(userId int) ([]models.PasswordList, error)
 	GetById(userId, id int) (models.PasswordList, error)
+	Delete(userId, listId int) error
 }
 
 type PasswordItem interface {

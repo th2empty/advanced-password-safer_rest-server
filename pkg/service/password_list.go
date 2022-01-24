@@ -24,3 +24,7 @@ func (s *PasswordListService) GetAll(userId int) ([]models.PasswordList, error) 
 func (s *PasswordListService) GetById(userId, id int) (models.PasswordList, error) {
 	return s.repo.GetById(userId, id)
 }
+
+func (s *PasswordListService) Delete(userId, listId int) error {
+	return s.repo.Delete(userId, listId)
+}
