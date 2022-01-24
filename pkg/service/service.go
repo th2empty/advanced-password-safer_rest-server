@@ -19,6 +19,11 @@ type PasswordList interface {
 }
 
 type PasswordItem interface {
+	Add(userId, listId int, item models.PasswordItem) (int, error)
+	GetAll(userId, listId int) ([]models.PasswordItem, error)
+	GetById(userId, passwordId int) (models.PasswordItem, error)
+	Delete(userId, passwordId int) error
+	Update(userId, passwordId int, input models.UpdatePasswordInput) error
 }
 
 type Service struct {
@@ -31,5 +36,6 @@ func NewService(repos *repository.Repository) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization),
 		PasswordList:  NewPasswordListService(repos.PasswordList),
+		PasswordItem:  NewPasswordItemService(repos.PasswordItem, repos.PasswordList),
 	}
 }

@@ -72,9 +72,9 @@ func (h *Handler) GetList(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, list)
 }
 
-func (h *Handler) UpdateList(ctx *gin.Context) {
+/*func (h *Handler) UpdateList(ctx *gin.Context) {
 
-}
+}*/
 
 func (h *Handler) DeleteList(ctx *gin.Context) {
 	userId, err := getUserId(ctx)

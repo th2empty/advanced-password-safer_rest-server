@@ -31,20 +31,24 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 		passwordLists := api.Group("/password_lists")
 		{
-			passwordLists.POST("/", h.CreateList)      // create list
-			passwordLists.GET("/", h.GetAllLists)      // get all lists
-			passwordLists.GET("/:id", h.GetList)       // get list by id
-			passwordLists.PUT("/:id", h.UpdateList)    // update list by id
+			passwordLists.POST("/", h.CreateList) // create list
+			passwordLists.GET("/", h.GetAllLists) // get all lists
+			passwordLists.GET("/:id", h.GetList)  // get list by id
+			//passwordLists.PUT("/:id", h.UpdateList)    // update list by id
 			passwordLists.DELETE("/:id", h.DeleteList) // delete list by id
 
-			passwords := api.Group(":id/passwords")
+			passwords := passwordLists.Group(":id/passwords")
 			{
-				passwords.POST("/", h.AddPassword)              // add pass
-				passwords.GET("/", h.GetAllPasswords)           // get all passwords
-				passwords.GET("/:pass_id", h.GetPassword)       // get password by id
-				passwords.PUT("/:pass_id", h.UpdatePassword)    // update password by id
-				passwords.DELETE("/:pass_id", h.DeletePassword) // delete password by id
+				passwords.POST("/", h.AddPassword)    // add pass
+				passwords.GET("/", h.GetAllPasswords) // get all passwords
 			}
+		}
+
+		passwords := api.Group("passwords")
+		{
+			passwords.GET("/:id", h.GetPassword)       // get password by id
+			passwords.PUT("/:id", h.UpdatePassword)    // update password by id
+			passwords.DELETE("/:id", h.DeletePassword) // delete password by id
 		}
 
 	}

@@ -18,6 +18,11 @@ type PasswordList interface {
 }
 
 type PasswordItem interface {
+	Add(listId int, item models.PasswordItem) (int, error)
+	GetAll(userId, listId int) ([]models.PasswordItem, error)
+	GetById(userId, passwordId int) (models.PasswordItem, error)
+	Delete(userId, passwordId int) error
+	Update(userId, passwordId int, input models.UpdatePasswordInput) error
 }
 
 type Repository struct {
@@ -30,5 +35,6 @@ func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
 		Authorization: NewAuthPostgres(db),
 		PasswordList:  NewPasswordListPostgres(db),
+		PasswordItem:  NewPasswordItemPostgres(db),
 	}
 }
