@@ -5,15 +5,19 @@ import (
 	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/spf13/viper"
+	"github.com/th2empty/auth-server/configs"
 	"github.com/th2empty/auth-server/pkg/models"
 	"github.com/th2empty/auth-server/pkg/repository"
 	"time"
 )
 
-const (
-	salt       = "t2f4lemya060"
-	tokenTTL   = 744 * time.Hour // The token will become invalid after 31 days
-	signingKey = "hfbgfoia#oihfg89273nkjbtc#"
+var (
+	_ = configs.InitConfig()
+
+	salt       = viper.GetString("auth.salt")
+	tokenTTL   = viper.GetDuration("auth.token_ttl") * time.Hour
+	signingKey = viper.GetString("auth.signing_key")
 )
 
 type tokenClaims struct {

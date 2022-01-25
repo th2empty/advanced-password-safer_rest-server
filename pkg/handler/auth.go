@@ -16,7 +16,22 @@ func (h *Handler) SignUp(ctx *gin.Context) {
 
 	id, err := h.services.Authorization.CreateUser(input)
 	if err != nil {
-		newErrorResponse(ctx, http.StatusInternalServerError, err.Error())
+		var errStruct = models.Error{
+			Package: "handler",
+			File:    "auth.go",
+			Func:    "SignUp",
+			Err:     err.Error(),
+		}
+
+		if errStruct.Message = err.Error(); err.Error() == "pq: duplicate key value violates unique constraint \"users_username_key\"" {
+			errStruct.Message = models.UserAlreadyRegistered
+		}
+
+		if errStruct.StatusCode = http.StatusInternalServerError; errStruct.Message == models.UserAlreadyRegistered {
+			errStruct.StatusCode = http.StatusConflict
+		}
+
+		newErrorResponseDetails(ctx, errStruct.StatusCode, errStruct)
 		return
 	}
 
@@ -40,7 +55,22 @@ func (h *Handler) SignIn(ctx *gin.Context) {
 
 	token, err := h.services.Authorization.GenerateToken(input.Username, input.Password)
 	if err != nil {
-		newErrorResponse(ctx, http.StatusInternalServerError, err.Error())
+		var errStruct = models.Error{
+			Package: "handler",
+			File:    "auth.go",
+			Func:    "SignIn",
+			Err:     err.Error(),
+		}
+
+		if errStruct.Message = err.Error(); err.Error() == "sql: no rows in result set" {
+			errStruct.Message = models.InvalidPasswordOrUsername
+		}
+
+		if errStruct.StatusCode = http.StatusInternalServerError; errStruct.Message == models.InvalidPasswordOrUsername {
+			errStruct.StatusCode = http.StatusBadRequest
+		}
+
+		newErrorResponseDetails(ctx, errStruct.StatusCode, errStruct)
 		return
 	}
 

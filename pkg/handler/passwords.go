@@ -89,14 +89,21 @@ func (h *Handler) GetPassword(ctx *gin.Context) {
 
 	password, err := h.services.PasswordItem.GetById(userId, passwordId)
 	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"package":    "handler",
-			"file":       "passwords.go",
-			"function":   "GetPassword",
-			"code_block": 3,
-			"error":      err,
-		}).Error()
-		newErrorResponse(ctx, http.StatusInternalServerError, err.Error())
+		var errStruct = models.Error{
+			Package: "handler",
+			File:    "passwords.go",
+			Func:    "GetPassword",
+			Err:     err.Error(),
+		}
+		if errStruct.Message = err.Error(); err.Error() == "sql: no rows in result set" {
+			errStruct.Message = models.PasswordNotFound
+		}
+
+		if errStruct.StatusCode = http.StatusInternalServerError; errStruct.Message == models.PasswordNotFound {
+			errStruct.StatusCode = http.StatusNotFound
+		}
+
+		newErrorResponseDetails(ctx, errStruct.StatusCode, errStruct)
 		return
 	}
 
@@ -104,8 +111,10 @@ func (h *Handler) GetPassword(ctx *gin.Context) {
 		"package":  "handler",
 		"file":     "passwords.go",
 		"function": "GetPassword",
+		"user":     userId,
+		"password": passwordId,
 		"message":  "password received successfully",
-	}).Info()
+	}).Debug()
 	ctx.JSON(http.StatusOK, password)
 }
 
@@ -163,14 +172,13 @@ func (h *Handler) UpdatePassword(ctx *gin.Context) {
 func (h *Handler) DeletePassword(ctx *gin.Context) {
 	userId, err := getUserId(ctx)
 	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"package":    "handler",
-			"file":       "passwords.go",
-			"function":   "DeletePassword",
-			"code_block": 1,
-			"error":      err,
-		}).Error()
-		newErrorResponse(ctx, http.StatusBadRequest, "user id not found")
+		newErrorResponseDetails(ctx, http.StatusBadRequest, models.Error{
+			Package: "handler",
+			File:    "passwords.go",
+			Func:    "DeletePassword",
+			Err:     err.Error(),
+			Message: models.UserIdNotFound,
+		})
 		return
 	}
 
